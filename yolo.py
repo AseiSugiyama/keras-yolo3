@@ -8,15 +8,15 @@ import os
 from timeit import default_timer as timer
 
 import numpy as np
-from keras import backend as K
-from keras.models import load_model
-from keras.layers import Input
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Input
 from PIL import Image, ImageFont, ImageDraw
 
 from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from yolo3.utils import letterbox_image
 import os
-from keras.utils import multi_gpu_model
+from tensorflow.keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
@@ -210,3 +210,24 @@ def detect_video(yolo, video_path, output_path=""):
             break
     yolo.close_session()
 
+
+def detect_img(yolo):
+    while True:
+        img = input('Input image filename:')
+        try:
+            image = Image.open(img)
+        except:
+            print('Open Error! Try again!')
+            continue
+        else:
+            r_image = yolo.detect_image(image)
+            print(type(r_image))
+            import cv2
+            cv2.imwrite("out.jpg", np.asarray(r_image)[..., ::-1])
+            r_image.show()
+    yolo.close_session()
+
+
+
+if __name__ == '__main__':
+    detect_img(YOLO())
